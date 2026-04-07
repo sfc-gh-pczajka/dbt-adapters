@@ -65,7 +65,7 @@ DYNAMIC_ICEBERG_TABLE = """
     target_lag='2 minutes',
     refresh_mode='INCREMENTAL',
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
 ) }}
 select * from {{ ref('my_seed') }}
@@ -101,7 +101,7 @@ DYNAMIC_ICEBERG_TABLE_ALTER = """
     target_lag='5 minutes',
     refresh_mode='INCREMENTAL',
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
 ) }}
 select * from {{ ref('my_seed') }}
@@ -115,7 +115,7 @@ DYNAMIC_ICEBERG_TABLE_REPLACE = """
     target_lag='2 minutes',
     refresh_mode='FULL',
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
 ) }}
 select * from {{ ref('my_seed') }}
@@ -407,7 +407,7 @@ DYNAMIC_ICEBERG_TABLE_SCHEDULER_DISABLED = """
     snowflake_warehouse='DBT_TESTING',
     scheduler='DISABLE',
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
 ) }}
 select * from {{ ref('my_seed') }}
@@ -421,7 +421,7 @@ DYNAMIC_ICEBERG_TABLE_SCHEDULER_ENABLED = """
     target_lag='2 minutes',
     scheduler='ENABLE',
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
 ) }}
 select * from {{ ref('my_seed') }}

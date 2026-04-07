@@ -6,7 +6,7 @@ _MODEL_ICEBERG_BASE = """
   config(
     materialized="incremental",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change="append_new_columns"
   )
 }}
@@ -20,7 +20,7 @@ _MODEL_ICEBERG_ADDED_COLUMN = """
   config(
     materialized="incremental",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change="append_new_columns"
   )
 }}
@@ -35,7 +35,7 @@ _MODEL_ICEBERG_ADDED_STRING_COLUMN = """
   config(
     materialized="incremental",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change="append_new_columns"
   )
 }}

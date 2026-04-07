@@ -191,7 +191,7 @@ _MODELS_ICEBERG_TABLE_TAG_AND_ROW_ACCESS_POLICY = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
     table_tag = "tag_name = 'tag_value'",
     row_access_policy = 'always_true on (id)',
@@ -207,7 +207,7 @@ _MODELS_ICEBERG_TABLE_TAG = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
     table_tag = "tag_name = 'tag_value'",
   )
@@ -223,7 +223,7 @@ _MODELS_ICEBERG_TABLE_ROW_POLICY = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
     row_access_policy = 'always_true on (id)',
   )
