@@ -1,0 +1,59 @@
+name: "Snowflake Universal Driver Tests"
+run-name: "Snowflake UD Tests - ${{ github.actor }} - ref:${{ inputs.universal-driver-ref }}"
+
+on:
+    workflow_dispatch:
+        inputs:
+            universal-driver-ref:
+                description: "Universal driver git ref (branch, tag, or SHA)"
+                type: string
+                default: "main"
+            python-version:
+                description: "Python version"
+                type: choice
+                options: ["3.10", "3.11", "3.12", "3.13"]
+                default: "3.13"
+
+permissions:
+    contents: read
+
+jobs:
+    integration-tests:
+        runs-on: ubuntu-22.04
+        defaults:
+            run:
+                working-directory: "./dbt-snowflake"
+
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v4
+
+            - name: "Set up Python"
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ inputs.python-version }}
+
+            - name: "Decrypt test.env"
+              run: gpg --batch --yes --passphrase "${{ secrets.PARAMETERS_SECRET }}" --decrypt -o test.env test.env.gpg
+
+            - name: "Patch dependencies for universal driver"
+              run: |
+                  # Remove snowflake-connector-python from project dependencies
+                  sed -i '/snowflake-connector-python/d' pyproject.toml
+
+                  # Add universal driver installation as first pre-install command
+                  UD_REF="${{ inputs.universal-driver-ref }}"
+                  UD_PIP="pip install 'git+https://github.com/snowflakedb/universal-driver@${UD_REF}#subdirectory=python'"
+                  sed -i "s|pre-install-commands = \[|pre-install-commands = [\n    \"${UD_PIP}\",|" hatch.toml
+
+                  echo "=== pyproject.toml dependencies ==="
+                  grep -A 10 '^\[project\]' pyproject.toml | grep -A 10 'dependencies'
+                  echo ""
+                  echo "=== hatch.toml pre-install-commands ==="
+                  grep -A 5 'pre-install-commands' hatch.toml | head -10
+
+            - name: "Install hatch"
+              uses: pypa/hatch@install
+
+            - name: "Run integration tests"
+              run: hatch run integration-tests
