@@ -50,7 +50,7 @@ _MODEL_ICEBERG_ADDED_SIZED_VARCHAR_COLUMN = """
   config(
     materialized="incremental",
     table_format="iceberg",
-    external_volume="ICEBERG_SANDBOX",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     catalog="SNOWFLAKE",
     on_schema_change="append_new_columns"
   )
@@ -129,7 +129,7 @@ _MODEL_ICEBERG_STRUCTURED_TYPE = """
   config(
     materialized="incremental",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change="sync_all_columns"
   )
 }}

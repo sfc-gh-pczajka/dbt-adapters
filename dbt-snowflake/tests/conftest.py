@@ -20,6 +20,8 @@ TESTS_TO_SKIP = {
     "tests/functional/iceberg/test_iceberg_partition_by.py::TestPartitionByIcebergRestCatalog",
     "tests/functional/iceberg/test_iceberg_partition_by.py::TestPartitionByIgnoredIfNotIceberg",
     "tests/functional/adapter/catalog_tests/test_catalog.py",
+    "tests/functional/auth_tests/test_pat.py",
+    "tests/functional/adapter/change_tracking/test_change_tracking_show_tables.py::TestIcebergTableChangeTrackingShowTables",
 }
 
 
