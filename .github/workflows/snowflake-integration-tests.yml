@@ -16,6 +16,17 @@ permissions:
 jobs:
     integration-tests:
         runs-on: ubuntu-22.04
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - group: "adapter"
+                      paths: "tests/functional/adapter tests/functional/auth_tests tests/functional/extra_config tests/functional/generic_test_tests tests/functional/warehouse_test"
+                    - group: "relation"
+                      paths: "tests/functional/relation_tests tests/functional/iceberg tests/functional/incremental"
+                    - group: "other"
+                      paths: "tests/functional/functions tests/functional/override_database tests/functional/query_tag tests/functional/redact_log_values tests/functional/s3_stage_vpce_dns_name tests/functional/snowflake_view_dependency tests/functional/test_isolated_begin_commit.py"
+        name: "${{ matrix.group }}"
         defaults:
             run:
                 working-directory: "./dbt-snowflake"
@@ -36,4 +47,4 @@ jobs:
               uses: pypa/hatch@install
 
             - name: "Run integration tests"
-              run: hatch run integration-tests
+              run: hatch run integration-tests -- ${{ matrix.paths }}
