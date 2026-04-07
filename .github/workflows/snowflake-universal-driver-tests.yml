@@ -37,20 +37,7 @@ jobs:
               run: gpg --batch --yes --passphrase "${{ secrets.PARAMETERS_SECRET }}" --decrypt -o test.env test.env.gpg
 
             - name: "Patch dependencies for universal driver"
-              run: |
-                  # Remove snowflake-connector-python from project dependencies
-                  sed -i '/snowflake-connector-python/d' pyproject.toml
-
-                  # Add universal driver installation as first pre-install command
-                  UD_REF="${{ inputs.universal-driver-ref }}"
-                  UD_PIP="pip install 'git+https://github.com/snowflakedb/universal-driver@${UD_REF}#subdirectory=python'"
-                  sed -i "s|pre-install-commands = \[|pre-install-commands = [\n    \"${UD_PIP}\",|" hatch.toml
-
-                  echo "=== pyproject.toml dependencies ==="
-                  grep -A 10 '^\[project\]' pyproject.toml | grep -A 10 'dependencies'
-                  echo ""
-                  echo "=== hatch.toml pre-install-commands ==="
-                  grep -A 5 'pre-install-commands' hatch.toml | head -10
+              run: python3 scripts/patch_universal_driver.py "${{ inputs.universal-driver-ref }}"
 
             - name: "Install hatch"
               uses: pypa/hatch@install
