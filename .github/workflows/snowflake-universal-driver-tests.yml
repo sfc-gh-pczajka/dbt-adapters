@@ -54,4 +54,54 @@ jobs:
               uses: pypa/hatch@install
 
             - name: "Run integration tests"
-              run: hatch run integration-tests -- ${{ matrix.paths }}
+              id: tests
+              run: |
+                  hatch run integration-tests -- ${{ matrix.paths }} 2>&1 | tee test-output.log || true
+                  # Extract the pytest summary line (last line matching the pattern)
+                  grep -oP '[\d]+ (failed|passed|skipped|warnings?|errors?)' test-output.log > results.txt || true
+                  cat results.txt
+
+            - name: "Upload results"
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: results-${{ matrix.group }}
+                  path: dbt-snowflake/results.txt
+
+    summary:
+        if: always()
+        needs: integration-tests
+        runs-on: ubuntu-22.04
+        steps:
+            - name: "Download all results"
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: results-*
+
+            - name: "Generate summary"
+              run: |
+                  python3 - <<'SCRIPT'
+                  import glob, re, collections, os
+
+                  totals = collections.Counter()
+                  for path in sorted(glob.glob("results-*/results.txt")):
+                      with open(path) as f:
+                          for line in f:
+                              line = line.strip()
+                              m = re.match(r"(\d+)\s+(\w+)", line)
+                              if m:
+                                  totals[m.group(2)] += int(m.group(1))
+
+                  parts = []
+                  for key in ["failed", "passed", "skipped", "warnings", "errors"]:
+                      if totals.get(key, 0) > 0:
+                          parts.append(f"{totals[key]} {key}")
+
+                  line = "= " + ", ".join(parts) + " ="
+                  print(line)
+                  with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+                      f.write(f"## Test Results\n\n`{line}`\n")
+
+                  if totals.get("failed", 0) > 0 or totals.get("errors", 0) > 0:
+                      exit(1)
+                  SCRIPT
