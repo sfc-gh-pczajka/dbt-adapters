@@ -70,7 +70,7 @@ class TestIcebergTableChangeTrackingShowTables(BaseCatalogIntegrationValidation)
                             "catalog_type": "BUILT_IN",
                             "table_format": "iceberg",
                             "external_volume": os.environ.get(
-                                "SNOWFLAKE_TEST_ICEBERG_EXTERNAL_VOLUME",
+                                "SNOWFLAKE_TEST_EXTERNAL_VOLUME",
                                 "s3_iceberg_snow",
                             ),
                             "adapter_properties": {

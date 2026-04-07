@@ -31,7 +31,7 @@ _MODEL_INCREMENTAL_ICEBERG_BASE = """
     table_format='iceberg',
     incremental_strategy='{strategy}',
     unique_key="world_id",
-    external_volume = "s3_iceberg_snow",
+    external_volume = env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change = "sync_all_columns"
   )
 }}}}
@@ -49,7 +49,7 @@ _MODEL_INCREMENTAL_ICEBERG_BUILTIN_BASE = """
     catalog='snowflake',
     incremental_strategy='{strategy}',
     unique_key="world_id",
-    external_volume = "s3_iceberg_snow",
+    external_volume = env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     on_schema_change = "sync_all_columns"
   )
 }}}}

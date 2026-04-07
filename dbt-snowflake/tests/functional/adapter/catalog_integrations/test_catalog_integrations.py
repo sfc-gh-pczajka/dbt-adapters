@@ -1,3 +1,4 @@
+import os
 import re
 import pytest
 from dbt.tests.adapter.catalog_integrations.test_catalog_integration import (
@@ -42,7 +43,9 @@ class TestSnowflakeBuiltInCatalogIntegration(BaseCatalogIntegrationValidation):
                             "name": "basic_iceberg_catalog_integration",
                             "catalog_type": "BUILT_IN",
                             "table_format": "iceberg",
-                            "external_volume": f"s3_iceberg_snow",
+                            "external_volume": os.getenv(
+                                "SNOWFLAKE_TEST_EXTERNAL_VOLUME", "s3_iceberg_snow"
+                            ),
                             "adapter_properties": {
                                 "storage_serialization_policy": "OPTIMIZED",
                                 "max_data_extension_time_in_days": 60,
