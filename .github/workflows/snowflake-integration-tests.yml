@@ -1,0 +1,101 @@
+name: "Snowflake Integration Tests"
+run-name: "Snowflake Integration Tests - ${{ github.actor }}"
+
+on:
+    workflow_dispatch:
+        inputs:
+            python-version:
+                description: "Python version"
+                type: choice
+                options: ["3.10", "3.11", "3.12", "3.13"]
+                default: "3.13"
+
+permissions:
+    contents: read
+
+jobs:
+    integration-tests:
+        runs-on: ubuntu-22.04
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - group: "adapter"
+                      paths: "tests/functional/adapter tests/functional/auth_tests tests/functional/extra_config tests/functional/generic_test_tests tests/functional/warehouse_test"
+                    - group: "relation"
+                      paths: "tests/functional/relation_tests tests/functional/iceberg tests/functional/incremental"
+                    - group: "other"
+                      paths: "tests/functional/functions tests/functional/override_database tests/functional/query_tag tests/functional/redact_log_values tests/functional/s3_stage_vpce_dns_name tests/functional/snowflake_view_dependency tests/functional/test_isolated_begin_commit.py"
+        name: "${{ matrix.group }}"
+        defaults:
+            run:
+                working-directory: "./dbt-snowflake"
+
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v4
+
+            - name: "Set up Python"
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ inputs.python-version }}
+
+            - name: "Decrypt test.env"
+              run: gpg --batch --yes --passphrase "${{ secrets.PARAMETERS_SECRET }}" --decrypt -o test.env test.env.gpg
+
+            - name: "Install hatch"
+              uses: pypa/hatch@install
+
+            - name: "Run integration tests"
+              id: tests
+              run: |
+                  hatch run integration-tests -- ${{ matrix.paths }} 2>&1 | tee test-output.log || true
+                  # Extract the pytest summary line (last line matching the pattern)
+                  grep -oP '[\d]+ (failed|passed|skipped|warnings?|errors?)' test-output.log > results.txt || true
+                  cat results.txt
+
+            - name: "Upload results"
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: results-${{ matrix.group }}
+                  path: dbt-snowflake/results.txt
+
+    summary:
+        if: always()
+        needs: integration-tests
+        runs-on: ubuntu-22.04
+        steps:
+            - name: "Download all results"
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: results-*
+
+            - name: "Generate summary"
+              run: |
+                  python3 - <<'SCRIPT'
+                  import glob, re, collections
+
+                  totals = collections.Counter()
+                  for path in sorted(glob.glob("results-*/results.txt")):
+                      with open(path) as f:
+                          for line in f:
+                              line = line.strip()
+                              m = re.match(r"(\d+)\s+(\w+)", line)
+                              if m:
+                                  totals[m.group(2)] += int(m.group(1))
+
+                  parts = []
+                  for key in ["failed", "passed", "skipped", "warnings", "errors"]:
+                      if totals.get(key, 0) > 0:
+                          parts.append(f"{totals[key]} {key}")
+
+                  line = "= " + ", ".join(parts) + " ="
+                  print(line)
+                  import os
+                  with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+                      f.write(f"## Test Results\n\n`{line}`\n")
+
+                  if totals.get("failed", 0) > 0 or totals.get("errors", 0) > 0:
+                      exit(1)
+                  SCRIPT
