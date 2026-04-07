@@ -41,8 +41,12 @@ def dbt_profile_target():
         "account": os.getenv("SNOWFLAKE_TEST_ACCOUNT"),
         "database": os.getenv("SNOWFLAKE_TEST_DATABASE"),
         "warehouse": os.getenv("SNOWFLAKE_TEST_WAREHOUSE"),
-        "private_key_path": os.getenv("SNOWFLAKE_TEST_PRIVATE_KEY_PATH"),
     }
+
+    if os.getenv("SNOWFLAKE_TEST_PRIVATE_KEY"):
+        profile["private_key"] = os.getenv("SNOWFLAKE_TEST_PRIVATE_KEY")
+    elif os.getenv("SNOWFLAKE_TEST_PRIVATE_KEY_PATH"):
+        profile["private_key_path"] = os.getenv("SNOWFLAKE_TEST_PRIVATE_KEY_PATH")
 
     # Support PAT or password authentication
     authenticator = os.getenv("SNOWFLAKE_TEST_AUTHENTICATOR")
