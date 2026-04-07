@@ -13,7 +13,7 @@ _MODEL_BASIC_TABLE_LITERALS = """
   config(
     materialized = "table",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
   )
 }}
@@ -29,7 +29,7 @@ _MODEL_BASIC_ICEBERG_MODEL = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
   )
 }}
@@ -44,7 +44,7 @@ _MODEL_BASIC_ICEBERG_BUILTIN_MODEL = """
     materialized = "table",
     cluster_by=['id'],
     catalog="snowflake",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
   )
 }}
@@ -59,7 +59,7 @@ _MODEL_BASIC_ICEBERG_MODEL_WITH_PATH = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_root="root_path",
   )
 }}
@@ -74,7 +74,7 @@ _MODEL_BASIC_ICEBERG_MODEL_WITH_PATH_SUBPATH = """
     materialized = "table",
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_root="root_path",
     base_location_subpath="subpath",
   )
@@ -90,7 +90,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_MODEL = """
     target_lag='1 minute',
     refresh_mode='INCREMENTAL',
     table_format='iceberg',
-    external_volume='s3_iceberg_snow',
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
 ) }}
 
 select * from {{ ref('first_table') }}
@@ -103,7 +103,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_ICEBERG_MODEL = """
     target_lag='1 minute',
     refresh_mode='INCREMENTAL',
     catalog='snowflake',
-    external_volume='s3_iceberg_snow',
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
 ) }}
 
 select * from {{ ref('first_table') }}
@@ -117,7 +117,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_MODEL_WITH_PATH = """
     target_lag='1 minute',
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_root="root_path",
   )
 }}
@@ -133,7 +133,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_MODEL_WITH_PATH_SUBPATH = """
     target_lag='1 minute',
     cluster_by=['id'],
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_root="root_path",
     base_location_subpath='subpath',
   )
@@ -150,7 +150,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_MODEL_WITH_SUBPATH = """
     target_lag='1 minute',
     refresh_mode='INCREMENTAL',
     table_format='iceberg',
-    external_volume='s3_iceberg_snow',
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath='subpath',
 ) }}
 
@@ -184,7 +184,7 @@ _MODEL_TABLE_FOR_SWAP_ICEBERG = """
   config(
     materialized = "table",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     base_location_subpath="subpath",
   )
 }}

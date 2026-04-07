@@ -48,7 +48,7 @@ _MODEL_ICEBERG = """
   config(
     materialized = "table",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
   )
 }}
 

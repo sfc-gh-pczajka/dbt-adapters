@@ -130,7 +130,9 @@ class TestIcebergPartitionBy(BaseCatalogIntegrationValidation):
                     "write_integrations": [
                         {
                             "name": "iceberg_managed_test",
-                            "external_volume": "s3_iceberg_snow",
+                            "external_volume": os.getenv(
+                                "SNOWFLAKE_TEST_EXTERNAL_VOLUME", "s3_iceberg_snow"
+                            ),
                             "catalog_type": "built_in",
                             "table_format": "iceberg",
                             "adapter_properties": {
