@@ -10,9 +10,10 @@ from dbt.cli.main import dbtRunner
 freshness_via_metadata_schema_yml = """
 sources:
   - name: test_source
-    freshness:
-      warn_after: {count: 10, period: hour}
-      error_after: {count: 1, period: day}
+    config:
+      freshness:
+        warn_after: {count: 10, period: hour}
+        error_after: {count: 1, period: day}
     schema: "{{ env_var('DBT_GET_LAST_RELATION_TEST_SCHEMA') }}"
     tables:
       - name: test_table
@@ -21,9 +22,10 @@ sources:
 freshness_metadata_schema_batch_yml = """
 sources:
   - name: test_source
-    freshness:
-      warn_after: {count: 10, period: hour}
-      error_after: {count: 1, period: day}
+    config:
+      freshness:
+        warn_after: {count: 10, period: hour}
+        error_after: {count: 1, period: day}
     schema: "{{ env_var('DBT_GET_LAST_RELATION_TEST_SCHEMA') }}"
     tables:
       - name: test_table
