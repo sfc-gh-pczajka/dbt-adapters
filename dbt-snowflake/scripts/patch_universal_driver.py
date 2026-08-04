@@ -1,13 +1,15 @@
 """Patch pyproject.toml and hatch.toml to use the Snowflake universal driver.
 
 Usage:
-    python scripts/patch_universal_driver.py <git-ref>
+    python scripts/patch_universal_driver.py <git-ref> [owner/repo]
 
 Removes snowflake-connector-python from pyproject.toml and injects
 a pip install of the universal driver into hatch.toml pre-install-commands.
 """
 
 import sys
+
+DEFAULT_UD_REPO = "snowflakedb/universal-driver"
 
 
 def patch_pyproject(path="pyproject.toml"):
@@ -19,8 +21,8 @@ def patch_pyproject(path="pyproject.toml"):
                 f.write(line)
 
 
-def patch_hatch(path="hatch.toml", *, ud_ref: str):
-    ud_pip = f"pip install 'git+https://github.com/snowflakedb/universal-driver@{ud_ref}#subdirectory=python'"
+def patch_hatch(path="hatch.toml", *, ud_ref: str, ud_repo: str = DEFAULT_UD_REPO):
+    ud_pip = f"pip install 'git+https://github.com/{ud_repo}@{ud_ref}#subdirectory=python'"
     with open(path) as f:
         content = f.read()
     content = content.replace(
@@ -57,11 +59,12 @@ def show_results():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <universal-driver-git-ref>", file=sys.stderr)
+    if len(sys.argv) not in (2, 3):
+        print(f"Usage: {sys.argv[0]} <universal-driver-git-ref> [owner/repo]", file=sys.stderr)
         sys.exit(1)
 
     ref = sys.argv[1]
+    repo = sys.argv[2] if len(sys.argv) == 3 else DEFAULT_UD_REPO
     patch_pyproject()
-    patch_hatch(ud_ref=ref)
+    patch_hatch(ud_ref=ref, ud_repo=repo)
     show_results()
