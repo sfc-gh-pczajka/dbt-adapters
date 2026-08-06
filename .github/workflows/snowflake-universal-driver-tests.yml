@@ -11,8 +11,8 @@ on:
             universal-driver-repo:
                 description: "Universal driver GitHub repo (owner/repo)"
                 type: choice
-                options: ["snowflakedb/universal-driver", "snowflake-eng/universal-driver"]
-                default: "snowflakedb/universal-driver"
+                options: ["snowflakedb/drivers", "snowflake-eng/drivers"]
+                default: "snowflakedb/drivers"
             python-version:
                 description: "Python version"
                 type: choice
@@ -53,9 +53,9 @@ jobs:
               run: gpg --batch --yes --passphrase "${{ secrets.PARAMETERS_SECRET }}" --decrypt -o test.env test.env.gpg
 
             - name: "Configure git for private universal-driver access"
-              if: inputs.universal-driver-repo == 'snowflake-eng/universal-driver'
+              if: inputs.universal-driver-repo == 'snowflake-eng/drivers'
               run: |
-                  git config --global url."https://x-access-token:${{ secrets.UD_PRIVATE_REPO_TOKEN }}@github.com/snowflake-eng/universal-driver".insteadOf "https://github.com/snowflake-eng/universal-driver"
+                  git config --global url."https://x-access-token:${{ secrets.UD_PRIVATE_REPO_TOKEN }}@github.com/snowflake-eng/drivers".insteadOf "https://github.com/snowflake-eng/drivers"
 
             - name: "Patch dependencies for universal driver"
               run: python3 scripts/patch_universal_driver.py "${{ inputs.universal-driver-ref }}" "${{ inputs.universal-driver-repo }}"
