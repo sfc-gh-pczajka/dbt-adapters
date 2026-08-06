@@ -9,7 +9,7 @@ a pip install of the universal driver into hatch.toml pre-install-commands.
 
 import sys
 
-DEFAULT_UD_REPO = "snowflakedb/universal-driver"
+DEFAULT_UD_REPO = "snowflakedb/drivers"
 
 
 def patch_pyproject(path="pyproject.toml"):
