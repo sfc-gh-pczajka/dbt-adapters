@@ -463,7 +463,7 @@ class TestDynamicTableCopyGrants:
 {{ config(
     materialized='dynamic_table',
     target_lag='1 minute',
-    snowflake_warehouse='DBT_TESTING_ALT',
+    snowflake_warehouse=env_var('SNOWFLAKE_TEST_ALT_WAREHOUSE', 'DBT_TESTING'),
     copy_grants=true
 ) }}
 

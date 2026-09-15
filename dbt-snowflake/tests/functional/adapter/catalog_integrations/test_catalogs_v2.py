@@ -3,6 +3,7 @@
 Requires use_catalogs_v2 flag support in dbt-core (PR #12930).
 """
 
+import os
 import re
 import pytest
 from dbt.tests.util import run_dbt, write_config_file
@@ -68,7 +69,9 @@ class TestSnowflakeV2HorizonCatalog:
                     "table_format": "iceberg",
                     "config": {
                         "snowflake": {
-                            "external_volume": "s3_iceberg_snow",
+                            "external_volume": os.getenv(
+                                "SNOWFLAKE_TEST_EXTERNAL_VOLUME", "s3_iceberg_snow"
+                            ),
                             "storage_serialization_policy": "OPTIMIZED",
                             "max_data_extension_time_in_days": 60,
                             "data_retention_time_in_days": 0,
@@ -84,7 +87,8 @@ class TestSnowflakeV2HorizonCatalog:
         run_dbt(["run"])
 
         basic_sql = get_cleaned_model_ddl_from_file("horizon_iceberg.sql")
-        assert "external_volume = 's3_iceberg_snow'" in basic_sql
+        volume = os.getenv("SNOWFLAKE_TEST_EXTERNAL_VOLUME", "s3_iceberg_snow")
+        assert f"external_volume = '{volume}'" in basic_sql
         assert "storage_serialization_policy = 'OPTIMIZED'" in basic_sql
         assert "change_tracking = TRUE" in basic_sql
 

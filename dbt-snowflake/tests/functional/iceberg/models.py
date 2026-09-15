@@ -163,7 +163,7 @@ _MODEL_BASIC_ICEBERG_MODEL_V3 = """
     transient = "true",
     materialized = "table",
     table_format="iceberg",
-    external_volume="s3_iceberg_snow",
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     iceberg_version=3,
   )
 }}
@@ -178,7 +178,7 @@ _MODEL_BASIC_DYNAMIC_TABLE_ICEBERG_V3 = """
     target_lag='1 minute',
     refresh_mode='INCREMENTAL',
     catalog='snowflake',
-    external_volume='s3_iceberg_snow',
+    external_volume=env_var('SNOWFLAKE_TEST_EXTERNAL_VOLUME', 's3_iceberg_snow'),
     iceberg_version=3,
 ) }}
 
